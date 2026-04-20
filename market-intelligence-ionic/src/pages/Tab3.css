@@ -1,0 +1,34 @@
+.search-container {
+    padding: 10px;
+    background: #fff;
+}
+
+.map-wrapper {
+    height: 350px;
+    width: 94%;
+    margin: 10px auto;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 0;
+}
+
+.insight-card {
+    margin: 0;
+    text-align: center;
+    border-radius: 12px;
+}
+
+.insight-card IonIcon {
+    font-size: 24px;
+}
+
+.insight-card h2 {
+    margin: 5px 0 0;
+    font-weight: bold;
+}
+
+.leaflet-container {
+    height: 100%;
+    width: 100%;
+}
