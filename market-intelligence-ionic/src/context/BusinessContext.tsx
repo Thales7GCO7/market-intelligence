@@ -13,17 +13,17 @@ interface Business {
 interface BusinessContextType {
   results: Business[];
   setResults: (data: Business[]) => void;
-  segmento: string;
-  setSegmento: (s: string) => void;
+  segment: string;
+  setSegment: (s: string) => void;
 }
 
 const BusinessContext = createContext<BusinessContextType | undefined>(undefined);
 
 export const BusinessProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
   const [results, setResults] = useState<Business[]>([]);
-  const [segmento, setSegmento] = useState('');
+  const [segment, setSegment] = useState('');
   return (
-    <BusinessContext.Provider value={{ results, setResults, segmento, setSegmento }}>
+    <BusinessContext.Provider value={{ results, setResults, segment, setSegment }}>
       {children}
     </BusinessContext.Provider>
   );

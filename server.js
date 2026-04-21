@@ -16,12 +16,11 @@ app.use(express.json());
 // Rotas
 app.use('/api/businesses', businessesRouter);
 
-// Health check para testar se está online
 app.get('/health', (req, res) => res.json({ status: 'ok', environment: config.nodeEnv }));
 
 // Tratamento de erros
 app.use(errorHandler);
 
 app.listen(config.port, () => {
-  console.log(`🚀 BizScout API rodando na porta ${config.port}`);
+  console.log(` BizScout API rodando na porta ${config.port}`);
 });

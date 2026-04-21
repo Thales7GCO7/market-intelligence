@@ -7,12 +7,46 @@ router.get('/', async (req, res, next) => {
   try {
     const { lat, lng, segment, radius } = req.query;
 
-    const googleResults = await placesService.searchNearby({ 
-      lat, 
-      lng, 
-      radius, 
-      keyword: segment 
+    if (!segment) {
+      return res.status(400).json({ error: "O segmento é obrigatório." });
+    }
+
+    const googleResults = await placesService.searchNearby({ lat, lng, segment, radius });
+    console.log(`[DEBUG] Google retornou ${googleResults ? googleResults.length : 0} resultados.`);
+
+    if (!googleResults || googleResults.length === 0) {
+      return res.json({ source: 'google_api', count: 0, results: [] });
+    }
+
+    const filteredResults = googleResults.filter(estabelecimento => {
+      const termoBusca = segment.toLowerCase();
+      const nomeEstabelecimento = (estabelecimento.name || "").toLowerCase();
+      const tiposGoogle = estabelecimento.raw_data?.types || [];
+
+      const categoriaMap = {
+        'café': ['cafe', 'bakery', 'restaurant'],
+        'cafeteria': ['cafe'],
+        'farmácia': ['pharmacy', 'drugstore', 'health'],
+        'farmacia': ['pharmacy', 'drugstore', 'health'],
+        'padaria': ['bakery'],
+        'mercado': ['supermarket', 'grocery_or_supermarket', 'convenience_store'],
+        'academia': ['gym', 'health'],
+        'restaurante': ['restaurant', 'food']
+      };
+    
+      const nomeBate = nomeEstabelecimento.includes(termoBusca);
+    
+      const tiposAlvo = categoriaMap[termoBusca] || [];
+      const tipoBate = tiposGoogle.some(t => tiposAlvo.includes(t));
+    
+      const ehBloqueado = tiposGoogle.some(t => 
+        ['lodging', 'hotel', 'school', 'university', 'city_hall', 'local_government_office', 'church'].includes(t)
+      );
+    
+      return (nomeBate || tipoBate) && !ehBloqueado;
     });
+
+    console.log(`[DEBUG] Após filtro restaram ${filteredResults.length} resultados.`);
 
     const upsertQuery = `
       INSERT INTO businesses (google_id, name, segment, address, rating, review_count, location, raw_data)
@@ -22,48 +56,56 @@ router.get('/', async (req, res, next) => {
         rating = EXCLUDED.rating,
         review_count = EXCLUDED.review_count,
         updated_at = NOW()
-      RETURNING 
-        id, 
-        google_id, 
-        name, 
-        segment, 
-        address, 
-        rating, 
-        review_count, 
-        ST_Y(location::geometry) AS lat, 
-        ST_X(location::geometry) AS lng, 
-        raw_data, 
-        updated_at;
+      RETURNING id, google_id, name, segment, address, rating, review_count, 
+                ST_Y(location::geometry) AS lat, ST_X(location::geometry) AS lng, raw_data;
     `;
 
     const savedBusinesses = await Promise.all(
-      googleResults.map(async (biz) => {
-        const values = [
-          biz.google_id,
-          biz.name,
-          segment,
-          biz.address,
-          biz.rating || 0,
-          biz.review_count || 0,
-          biz.location.lng,
-          biz.location.lat,
-          JSON.stringify(biz.raw_data)
-        ];
+      filteredResults.map(async (est) => {
+        try {
+          
+          const latitude = est.location?.lat || est.geometry?.location?.lat;
+          const longitude = est.location?.lng || est.geometry?.location?.lng;
 
-        const resDb = await pool.query(upsertQuery, values);
-        return resDb.rows[0];
+          if (!latitude || !longitude) {
+            console.error(`[ERRO] Localização ausente para: ${est.name}`);
+            return null;
+          }
+
+          const values = [
+            est.google_id || est.place_id,
+            est.name,
+            segment,
+            est.address || est.vicinity,
+            est.rating || 0,
+            est.review_count || est.user_ratings_total || 0,
+            longitude,
+            latitude,
+            JSON.stringify(est.raw_data || est)
+          ];
+
+          const resDb = await pool.query(upsertQuery, values);
+          return resDb.rows[0];
+        } catch (dbErr) {
+          console.error(`[ERRO BANCO] Falha ao salvar ${est.name}:`, dbErr.message);
+          return null;
+        }
       })
     );
 
+    const resultadosFinais = savedBusinesses.filter(item => item !== null);
+    console.log(`[DEBUG] Enviando ${resultadosFinais.length} resultados para o browser.`);
+
     res.json({
-      source: 'google_api_and_db_sync',
-      count: savedBusinesses.length,
-      results: savedBusinesses
+      source: 'market_intelligence_sync',
+      segmento_pesquisado: segment,
+      count: resultadosFinais.length,
+      results: resultadosFinais
     });
 
   } catch (error) {
-    console.error("Erro no Business Route:", error);
-    res.status(500).json({ error: "Erro ao processar mercado", details: error.message });
+    console.error("Erro crítico na rota:", error);
+    res.status(500).json({ error: "Erro interno", details: error.message });
   }
 });
 

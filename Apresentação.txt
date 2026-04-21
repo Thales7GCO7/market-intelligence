@@ -1,5 +1,8 @@
 Ideia do projeto:
-1 - O Problema: Como decidir onde abrir um novo negócio sem dados reais? 
-2 - A Solução: Desenvolvi o MarketIntelligence, uma plataforma de geoprocessamento que cruza dados do Google Places com inteligência geográfica via PostGIS. Mapa Tab2.
-3 - O Diferencial: Mais que um mapa, o sistema gera relatórios de viabilidade automáticos, identificando gaps de qualidade e saturação de mercado. Mapa Tab3.
-4 - Encerramento: "Tecnologia a serviço da tomada de decisão.
+1 - O Problema: Como decidir onde abrir um novo negócio sem dados reais? Visibilidade da concorrência e qualidade do mercado local.
+2 - A Solução: Desenvolvi o MarketIntelligence, uma plataforma de geoprocessamento com integração com a API - Google Places com inteligência geográfica via PostGIS, transformando dados brutos em insights estratégicos com varredura automática por segmento de mercado e análise de rating e review count.
+3 - Para realização desse projeto utilizei React + IONIC, PostgreSQL + PostGIS e Google Cloud para extração de dados idôneos de mercado com a API Google Places.
+4 - O Diferencial: Visualização via Leaflet permite identificar clusters de concorrentes e áreas onde há um espaço onde a demanda não é atendida.
+5 - Métricas estratégicas: O app calcula e me retorna uma média de rating. Se a média é alta, focamos em preço; se é baixa, focamos em excelência de serviço.
+6 - Mais que um mapa, com base na métrica de rating calculada o sistema gera relatórios de viabilidade automáticos, identificando gaps de qualidade e saturação de mercado.
+7 - Encerramento: Tecnologia a serviço da tomada de decisão.

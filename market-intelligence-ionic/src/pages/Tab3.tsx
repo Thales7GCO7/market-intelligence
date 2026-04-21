@@ -5,7 +5,7 @@ import { useBusiness } from '../context/BusinessContext';
 import './Tab3.css';
 
 const Tab3: React.FC = () => {
-  const { results, segmento } = useBusiness();
+  const { results, segment } = useBusiness();
 
   const metrics = useMemo(() => {
   const total = results.length;
@@ -15,7 +15,6 @@ const Tab3: React.FC = () => {
   const mediaCalculada = somaRating / total;
   const gap = results.filter(b => (parseFloat(String(b.rating)) || 0) < 4.0).length;
   
-  // Se a média é 4.1, a oportunidade base é 0.9. Se a média é 2.0, a oportunidade base é 3.0.
   // Multiplicamos por 2 para chegar na escala de 0 a 10.
   let oportunidadeCalculada = (5 - mediaCalculada) * 2;
 
@@ -45,7 +44,7 @@ const Tab3: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar color="primary">
-          <IonTitle>BI Report: {segmento || 'Geral'}</IonTitle>
+          <IonTitle>BI Report: {segment || 'Geral'}</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
@@ -53,15 +52,15 @@ const Tab3: React.FC = () => {
         {/* Card de Score Global */}
         <IonCard mode="ios" color="light">
           <IonCardHeader>
-            <IonCardSubtitle>Score de Viabilidade para {segmento}</IonCardSubtitle>
+            <IonCardSubtitle>Score de Viabilidade para {segment}</IonCardSubtitle>
             <IonCardTitle style={{ fontSize: '28px' }}>
               {metrics.oportunidade}/10
             </IonCardTitle>
           </IonCardHeader>
           <IonCardContent>
             <strong>Diagnóstico:</strong> {Number(metrics.oportunidade) < 5 
-              ? `Mercado de ${segmento} altamente competitivo e com players bem avaliados.`
-              : `O setor de ${segmento} nesta região possui uma lacuna de qualidade. Excelente para novos entrantes.`}
+              ? `Mercado de ${segment} altamente competitivo e com players bem avaliados.`
+              : `O setor de ${segment} nesta região possui uma lacuna de qualidade. Excelente para novos entrantes.`}
           </IonCardContent>
         </IonCard>
 
@@ -76,7 +75,7 @@ const Tab3: React.FC = () => {
                 <IonIcon icon={businessOutline} slot="start" />
                 <IonLabel>
                   <h2>Amostragem</h2>
-                  <p>{metrics.total} {segmento}s analisados</p>
+                  <p>{metrics.total} {segment}s analisados</p>
                 </IonLabel>
               </IonItem>
               <IonItem>
@@ -100,11 +99,11 @@ const Tab3: React.FC = () => {
 
         {/* Diretriz Estratégica Customizada */}
         <div className="ion-padding">
-          <h3 style={{ fontWeight: 'bold' }}>Diretriz para o segmento de {segmento}:</h3>
+          <h3 style={{ fontWeight: 'bold' }}>Estratégia para o segmento de {segment}:</h3>
           <p style={{ color: '#555', lineHeight: '1.5' }}>
-            Baseado nos {metrics.total} estabelecimentos de <strong>{segmento}</strong> identificados, 
+            Baseado nos {metrics.total} estabelecimentos de <strong>{segment}</strong> identificados, 
             a estratégia recomendada é focar no 
-            {parseFloat(metrics.media) > 4.0 
+            {parseFloat(metrics.media) > 3.5 
               ? ` diferencial de preço ou conveniência, já que a satisfação média é alta (${metrics.media}).` 
               : ` aumento da qualidade percebida, dado que o mercado local falha em entregar excelência (Média: ${metrics.media}).`
             }
