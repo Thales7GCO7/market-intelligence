@@ -13,8 +13,7 @@ Análise de saturação de mercado por segmento.
 Relatórios estratégicos de viabilidade (Score de Oportunidade).
 Identificação de "Gaps de Qualidade" na concorrência local.
 
-Relatório de desenvolvimento:
-Desenvolvimento de uma aplicação híbrida de análise geomercadológica para identificação de concorrência em tempo real. Implementação de integração com Google Places API, sistema de persistência com PostgreSQL/PostGIS para consultas geoespaciais e interface mobile responsiva com Leaflet. Destaque para a criação de algoritmos de filtragem de dados brutos e normalização de categorias para relatórios de viabilidade comercial.
+Desafios e problemas solucionados no desenvolvimento:
 Durante o ciclo de desenvolvimento, identifiquei uma baixa precisão nos resultados da Google Places API, que gerava ruído nos dados ao retornar estabelecimentos baseados em serviços secundários (ex: hotéis e lojas sendo classificados como cafés). Para mitigar essa inconsistência, projetei e implementei uma camada de normalização de categorias no Back-End (Node.js). Através da criação de um dicionário de mapeamento entre palavras-chave de negócio e os Types oficiais do Google, além da aplicação de filtros lógicos de exclusão para categorias divergentes, otimizei o algoritmo de busca, reduzindo em 60% a incidência de falsos positivos e garantindo a integridade dos dados para análise de viabilidade.
 
 Tela Tab1:
